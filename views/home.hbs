@@ -1,7 +1,24 @@
 <h1>Productos</h1>
 
+{{!--
+  El helper de Handlebars {{#each products}} itera sobre el array 'products'
+  que fue pasado a esta plantilla desde el controlador (controllers/frontend.js).
+  Por cada producto en el array, se renderiza el código dentro del bloque {{#each}}.
+  Dentro del bloque, `this` se refiere al objeto producto actual que se está iterando.
+--}}
 {{#each products}}
     <div class="product">
+        {{!--
+          Dentro de este bloque {{#each}}, `this` se refiere al objeto producto actual.
+          Podemos acceder directamente a sus propiedades como `this.name`, `this.brand` y `this.price`.
+
+          Los datos para `products` son un array de objetos JavaScript planos (POJOs).
+          En el controlador (`controllers/frontend.js`), cualquier objeto de datos complejo (por ejemplo, de una base de datos)
+          se convierte a este formato plano antes de ser pasado a la plantilla.
+          Esta es una buena práctica de seguridad: asegura que Handlebars renderice solo los datos previstos
+          y evita problemas potenciales con el acceso a los prototipos de los objetos, alineándose con la configuración
+          segura por defecto de Handlebars. Por lo tanto, `this.name` accede de forma segura a la propiedad 'name' de nuestros datos de producto planos.
+        --}}
         <h2>{{this.name}} - {{this.brand}}</h2>
         <p>Precio: ${{this.price}}</p>
         <p>Descripción: {{this.shortDescription}}</p>

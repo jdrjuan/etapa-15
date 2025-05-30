@@ -1,7 +1,7 @@
 import ProductModelMem from './productsMem.js';
 import ProductModelFS from './productsFS.js';
 import ProductModelMongoDB from './productsMongoDB.js';
-import MongoDBClient from '../db/mongoDBClient.js';
+import MongoDBClient from '../db/MongoDBClient.js';
 
 class ProductModel {
     static async get (type) {
