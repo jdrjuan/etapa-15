@@ -20,27 +20,43 @@ const renderHome = async (req, res) => {
     //     incluyendo una propiedad `id` (string). La condición `p && typeof p.toObject === 'function'` maneja esto;
     //     si `toObject` no existe, el objeto `p` se usa tal cual.
     //
-    // El resultado final (`plainProducts`) es un array de objetos donde cada objeto:
-    //   - Tiene una propiedad `id` que es un string.
-    //   - No tiene la propiedad `_id` (especialmente relevante para Mongoose).
-    //   - Es seguro para pasar a las plantillas Handlebars.
+    // Asegurarse de que cada producto sea un objeto JavaScript plano (POJO).
+    // Esta conversión es crucial para la seguridad, la compatibilidad con Handlebars y para garantizar una estructura de datos predecible.
     const plainProducts = products ? products.map(p => {
-        if (p && typeof p.toObject === 'function') {
-            return p.toObject(); // Utiliza la configuración del esquema de Mongoose (virtuals y transform)
-        }
-        return p; // Para objetos ya planos (de FS, Memoria, o si `products` es null/undefined)
-    }) : [];
+        if (!p) return null; // Manejar posible producto nulo en la lista original.
 
-    // Nota: La siguiente comprobación `if (!plainProducts)` podría no ser estrictamente necesaria si `products`
-    // es un array vacío, ya que `map` devolvería un array vacío. Sin embargo, se mantiene por si `api.getAllProducts()`
-    // devolviera `null` o `undefined` en algún caso extremo, aunque la implementación actual de los modelos devuelve arrays.
-    if (!plainProducts) { 
-        // Si la obtención de productos falla o no devuelve productos (después de la conversión potencial),
-        // renderizar la página de inicio con un array de productos vacío.
-        // Esto asegura que la página se renderice correctamente incluso sin datos de productos.
-        // res.render('home', { title: 'Inicio', products: [] });
-    }
-    // Renderizar la plantilla `home`, pasando el título y los datos planos (`plainProducts`) que contienen `id` como string.
+        // Para documentos de Mongoose, .toObject() es la forma preferida de obtener un POJO.
+        // Incluir { virtuals: true, getters: true } asegura que los campos virtuales (como 'id') y getters se apliquen.
+        // La configuración del esquema de Mongoose (`models/productsMongoDB.js`) para `toObject` ya incluye
+        // `virtuals: true` y una transformación para eliminar `_id` y `__v`.
+        // Para otros tipos de objetos (ej. de FS o Memoria, que ya deberían ser planos),
+        // se crea una copia superficial para asegurar que no se modifiquen los objetos originales de la caché del modelo.
+        let productObject = (typeof p.toObject === 'function') 
+            ? p.toObject({ virtuals: true, getters: true }) 
+            : { ...p };
+        
+        // Doble verificación y normalización del ID como string.
+        // Aunque `p.toObject({ virtuals: true })` debería haber creado 'id' a partir de '_id' para Mongoose,
+        // esta sección actúa como un refuerzo y asegura la consistencia.
+        if (productObject._id) { // Si _id todavía existe (inesperado para Mongoose con la configuración de esquema correcta)
+            if (!productObject.id || typeof productObject.id !== 'string') { 
+                productObject.id = productObject._id.toString();
+            }
+            delete productObject._id; // Eliminar _id definitivamente.
+        } else if (productObject.id && typeof productObject.id !== 'string') {
+            // Si 'id' existe pero no es un string (ej. un ObjectId si la virtual no funcionó como se esperaba).
+            productObject.id = productObject.id.toString();
+        }
+        
+        // Eliminar el campo de versión de Mongoose si aún existe.
+        delete productObject.__v;
+
+        return productObject;
+    }).filter(p => p !== null) : []; // Filtrar cualquier producto que haya resultado nulo.
+
+    // Renderizar la plantilla `home`, pasando el título y el array de productos ya procesados (`plainProducts`).
+    // Cada producto en `plainProducts` está garantizado (o se intenta con alta probabilidad) de ser un POJO
+    // con una propiedad `id` (string) y sin `_id` o `__v`.
     res.render('home', { title: 'Inicio', products: plainProducts });
 };
 
@@ -63,21 +79,37 @@ const renderProductDetail = async (req, res) => {
         // - Un objeto producto si se encuentra.
         // - `null` si no se encuentra.
         // El objeto producto devuelto ya debería ser un objeto JavaScript plano (POJO)
-        // con una propiedad `id` (string) y sin `_id`, gracias a la estandarización
-        // realizada en las capas de modelo y API.
+        // con una propiedad `id` (string) y sin `_id`. (Verificación adicional abajo)
         const product = await api.getProductById(productId);
 
         if (product) {
-            // Si el producto se encuentra, renderizar la vista de detalle 'productDetail.hbs'.
-            // Se pasa el objeto producto completo a la plantilla.
-            // El título de la página se establece con el nombre del producto.
+            // Asegurar que el producto individual sea un objeto JavaScript plano (POJO)
+            // antes de pasarlo a la plantilla, aplicando la misma lógica que para la lista de productos.
+            let plainProduct = (typeof product.toObject === 'function') 
+                ? product.toObject({ virtuals: true, getters: true }) 
+                : { ...product };
+
+            // Doble verificación y normalización del ID como string para el producto individual.
+            if (plainProduct._id) {
+                if (!plainProduct.id || typeof plainProduct.id !== 'string') {
+                    plainProduct.id = plainProduct._id.toString();
+                }
+                delete plainProduct._id; // Eliminar _id definitivamente.
+            } else if (plainProduct.id && typeof plainProduct.id !== 'string') {
+                plainProduct.id = plainProduct.id.toString();
+            }
+            
+            // Eliminar el campo de versión de Mongoose si aún existe.
+            delete plainProduct.__v;
+
+            // Si el producto se encuentra y se ha procesado a POJO, renderizar la vista de detalle.
             res.render('productDetail', { 
-                title: product.name || 'Detalle del Producto', // Título de la página
-                product // Objeto producto para usar en la plantilla
+                title: plainProduct.name || 'Detalle del Producto', // Título de la página
+                product: plainProduct // Objeto producto plano para usar en la plantilla
             });
         } else {
             // Si el producto no se encuentra (api.getProductById devolvió null),
-            // responder con un estado 404 y renderizar la misma vista de detalle
+            // responder con un estado 404 y renderizar la misma vista de detalle (o una específica de error)
             // pero indicando que el producto no fue encontrado.
             // Opcionalmente, se podría tener una plantilla específica para errores 404.
             res.status(404).render('productDetail', {

@@ -12,18 +12,29 @@ const productsSchema = new mongoose.Schema({
     "mainPhoto": String
 }, {
     versionKey: false,
-    toJSON: { // Opciones para cuando el documento se convierte a JSON (ej. al enviar en respuestas res.json())
-        virtuals: true, // Asegura que los campos virtuales (como 'id') se incluyan.
-        transform: (doc, ret) => { // Permite transformar el objeto retornado.
-            delete ret._id; // Elimina el campo _id del objeto JSON. El virtual 'id' ya está presente.
-            delete ret.__v; // Elimina el campo de versión __v.
+    toJSON: { 
+        // Opciones para cuando el documento se convierte a JSON (ej. al enviar en respuestas res.json()).
+        // Estas opciones ayudan a preparar el documento para que la conversión final a POJO en el controlador sea más sencilla.
+        virtuals: true, // Incluye los campos virtuales definidos en el esquema (ej. 'id' por defecto de Mongoose).
+        getters: true,  // Aplica cualquier getter definido en el esquema a las propiedades correspondientes.
+        transform: function (doc, ret, options) {
+            // 'ret' es el objeto plano que Mongoose está a punto de devolver.
+            // El virtual 'id' ya debería estar presente en 'ret' gracias a `virtuals: true`.
+            delete ret._id;      // Elimina la propiedad original _id.
+            delete ret.__v;     // Elimina el campo de versión __v.
+            return ret;         // Es crucial devolver el objeto 'ret' modificado.
         }
     },
-    toObject: { // Opciones para cuando el documento se convierte a un objeto plano (ej. usando .toObject())
-        virtuals: true, // Asegura que los campos virtuales (como 'id') se incluyan.
-        transform: (doc, ret) => { // Permite transformar el objeto retornado.
-            delete ret._id; // Elimina el campo _id del objeto plano. El virtual 'id' ya está presente.
-            delete ret.__v; // Elimina el campo de versión __v.
+    toObject: { 
+        // Opciones para cuando el documento se convierte a un objeto plano (ej. usando el método .toObject()).
+        // Similar a toJSON, estas opciones preparan el documento. El controlador realizará la conversión final.
+        virtuals: true, // Incluye los campos virtuales.
+        getters: true,  // Aplica los getters del esquema.
+        transform: function (doc, ret, options) {
+            // El virtual 'id' ya debería estar en 'ret'.
+            delete ret._id;      // Elimina _id.
+            delete ret.__v;     // Elimina __v.
+            return ret;         // Devolver el objeto 'ret' modificado.
         }
     }
 });

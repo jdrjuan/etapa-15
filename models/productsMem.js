@@ -33,8 +33,11 @@ class ProductModelMemory {
         if (index === -1) {
             return null;
         }
-        // Asegurar que el ID original se mantenga en el objeto actualizado.
-        const updatedProduct = {...product, id}
+        // Combinar el producto existente con los campos del producto actualizado.
+        // Esto asegura que los campos no proporcionados en el payload de 'product' (actualización parcial)
+        // se mantengan del producto original. El 'id' se toma del parámetro para asegurar que no cambie.
+        const existingProduct = products[index];
+        const updatedProduct = {...existingProduct, ...product, id: existingProduct.id }; // Asegurar que el id no cambie por el payload
         products[index] = updatedProduct;
         return updatedProduct;
     };
