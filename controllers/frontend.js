@@ -1,32 +1,32 @@
 import api from '../api/products.js';
 
 const renderHome = async (req, res) => {
-    // Fetch product data using the api.getAllProducts() function.
-    // This function retrieves all products from the configured persistence layer (e.g., memory, file system, or MongoDB).
+    // Obtener los datos de los productos usando la función api.getAllProducts().
+    // Esta función recupera todos los productos desde la capa de persistencia configurada (ej. memoria, sistema de archivos o MongoDB).
     const products = await api.getAllProducts();
 
-    // Convert the fetched products to plain JavaScript objects before passing them to the template.
-    // If products are Mongoose documents or other complex objects with prototypes,
-    // this conversion is crucial for several reasons:
-    // 1. Security: It prevents unintended access to prototype properties or methods in Handlebars templates,
-    //    which is a security best practice (Handlebars disables prototype access by default since v4.6.0+).
-    //    This helps mitigate risks like prototype pollution.
-    // 2. Compatibility: Ensures that templates only deal with plain data, making them more robust
-    //    and less prone to errors if the underlying object structure changes or contains methods
-    //    not intended for rendering.
-    // 3. Explicitness: Clearly defines the data structure being passed to the template.
-    // We check if `products` exists and if each product has a `toObject` method (common for ORM/ODM objects).
-    // If not, we assume it's already a plain object or the array is empty.
+    // Convertir los productos obtenidos a objetos JavaScript planos (POJOs) antes de pasarlos a la plantilla.
+    // Si los productos son documentos de Mongoose u otros objetos complejos con prototipos,
+    // esta conversión es crucial por varias razones:
+    // 1. Seguridad: Previene el acceso no intencionado a propiedades o métodos del prototipo en las plantillas Handlebars,
+    //    lo cual es una buena práctica de seguridad (Handlebars deshabilita el acceso a prototipos por defecto desde v4.6.0+).
+    //    Esto ayuda a mitigar riesgos como la contaminación de prototipos (prototype pollution).
+    // 2. Compatibilidad: Asegura que las plantillas solo manejen datos planos, haciéndolas más robustas
+    //    y menos propensas a errores si la estructura del objeto subyacente cambia o contiene métodos
+    //    no destinados a la renderización.
+    // 3. Claridad: Define explícitamente la estructura de datos que se pasa a la plantilla.
+    // Verificamos si `products` existe y si cada producto tiene un método `toObject` (común en objetos ORM/ODM).
+    // Si no, asumimos que ya es un objeto plano o que el array está vacío.
     const plainProducts = products ? products.map(p => p && typeof p.toObject === 'function' ? p.toObject() : p) : [];
 
-    if (!plainProducts) { // Should check plainProducts now, though the map handles null/undefined products array.
-        // If fetching products fails or returns no products (after potential conversion),
-        // render the home page with an empty products array.
-        // This ensures the page still renders correctly without product data.
-        // An empty array is passed by the plainProducts mapping if products is null/undefined.
-        // res.render('home', { title: 'Inicio', products: [] }); // This line might be redundant due to current plainProducts logic
+    if (!plainProducts) { // Ahora se debería verificar plainProducts, aunque el .map maneja un array de productos nulo/indefinido.
+        // Si la obtención de productos falla o no devuelve productos (después de la conversión potencial),
+        // renderizar la página de inicio con un array de productos vacío.
+        // Esto asegura que la página se renderice correctamente incluso sin datos de productos.
+        // El .map de plainProducts devuelve un array vacío si products es null/undefined.
+        // res.render('home', { title: 'Inicio', products: [] }); // Esta línea podría ser redundante debido a la lógica actual de plainProducts.
     }
-    // Render the `home` template, passing the title and the plain `plainProducts` data.
+    // Renderizar la plantilla `home`, pasando el título y los datos planos de `plainProducts`.
     res.render('home', { title: 'Inicio', products: plainProducts });
 };
 
