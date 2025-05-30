@@ -17,19 +17,16 @@
     {{#with product}}
         {{!-- Usamos #with para establecer el contexto al objeto 'product' --}}
         {{!-- Esto nos permite acceder a sus propiedades directamente (ej. 'name' en lugar de 'product.name') --}}
-        
+
         <div class="container mt-4">
             <div class="row">
                 <div class="col-md-8 offset-md-2">
                     <div class="card">
-                        {{#if image}}
-                            {{!-- Si el producto tiene una imagen, mostrarla --}}
-                            {{!-- Nota: La propiedad 'image' no está actualmente en el modelo de datos, 
-                                 esto es un ejemplo si se quisiera agregar en el futuro. 
-                                 Si no existe, esta sección no se renderizará. --}}
-                            <img src="{{image}}" class="card-img-top" alt="Imagen de {{name}}">
+                        {{#if mainPhoto}}
+                            {{!-- Si el producto tiene una foto principal (propiedad 'mainPhoto'), mostrarla --}}
+                            <img src="{{mainPhoto}}" class="card-img-top" alt="Foto principal de {{name}}">
                         {{else}}
-                            {{!-- Placeholder visual si no hay imagen definida para el producto --}}
+                            {{!-- Placeholder visual si no hay 'mainPhoto' definida para el producto --}}
                             <div class="text-center p-5 bg-light">
                                 <p class="text-muted">(Imagen no disponible)</p>
                             </div>
@@ -40,7 +37,7 @@
                             {{#if brand}}
                                 <h4 class="card-subtitle mb-2 text-muted">Marca: {{brand}}</h4>
                             {{/if}}
-                            
+
                             <p class="card-text" style="font-size: 1.5rem; color: #007bff;">
                                 <strong>Precio: ${{price}}</strong>
                             </p>
@@ -49,15 +46,12 @@
                                 <p class="card-text"><em>{{shortDescription}}</em></p>
                             {{/if}}
 
-                            {{#if description}}
-                                <h5 class="mt-4">Descripción Detallada:</h5>
-                                <p class="card-text">{{description}}</p>
-                            {{else if longDescription}}
-                                {{!-- Fallback a longDescription si description no existe pero longDescription sí --}}
+                            {{#if longDescription}}
+                                {{!-- Si existe una descripción larga, mostrarla --}}
                                 <h5 class="mt-4">Descripción Detallada:</h5>
                                 <p class="card-text">{{longDescription}}</p>
                             {{/if}}
-                            
+
                             <hr>
 
                             <ul class="list-group list-group-flush">
@@ -68,7 +62,7 @@
                                 <li class="list-group-item"><strong>Código:</strong> {{code}}</li>
                                 {{/if}}
                                 <li class="list-group-item">
-                                    <strong>Stock:</strong> 
+                                    <strong>Stock:</strong>
                                     {{#if stock}}
                                         {{stock}} unidades disponibles
                                     {{else}}
