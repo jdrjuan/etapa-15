@@ -7,6 +7,13 @@ import { create } from 'express-handlebars';
 
 const app = express();
 
+// Configure Handlebars.
+// By default, Handlebars (v4.6.0+) disables access to prototype properties and methods
+// for security reasons. This is a good security practice to prevent unintended
+// access to potentially sensitive data or methods on object prototypes.
+// If you need to display data from objects with prototypes (e.g., Mongoose objects),
+// you should convert them to plain JavaScript objects before passing them to the template.
+// For example, using `.lean()` with Mongoose queries, or `JSON.parse(JSON.stringify(obj))`.
 const hbs = create({
     extname: '.hbs',
     defaultLayout: 'main',

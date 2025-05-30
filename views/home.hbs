@@ -1,7 +1,24 @@
 <h1>Productos</h1>
 
+{{!--
+  The {{#each products}} Handlebars helper iterates over the 'products' array
+  that was passed to this template from the controller (controllers/frontend.js).
+  For each product in the array, the code inside the {{#each}} block is rendered.
+  'this' inside the block refers to the current product object being iterated.
+--}}
 {{#each products}}
     <div class="product">
+        {{!--
+          Within this {{#each}} block, `this` refers to the current product object.
+          We can directly access its properties like `this.name`, `this.brand`, and `this.price`.
+
+          The data for `products` is an array of plain JavaScript objects.
+          In the controller (`controllers/frontend.js`), any complex data objects (e.g., from a database)
+          are converted into this plain format before being passed to the template.
+          This is a security best practice: it ensures that Handlebars renders only the intended data
+          and avoids potential issues with accessing object prototypes, aligning with Handlebars'
+          default secure settings. Thus, `this.name` safely accesses the 'name' property from our plain product data.
+        --}}
         <h2>{{this.name}} - {{this.brand}}</h2>
         <p>Precio: ${{this.price}}</p>
         <p>Descripción: {{this.shortDescription}}</p>
