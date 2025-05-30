@@ -12,11 +12,18 @@ const productsSchema = new mongoose.Schema({
     "mainPhoto": String
 }, {
     versionKey: false,
-    toJSON: {
-        virtuals: true,
-        transform: (doc, ret) => {
-            delete ret._id;
-            delete ret.__v;
+    toJSON: { // Opciones para cuando el documento se convierte a JSON (ej. al enviar en respuestas res.json())
+        virtuals: true, // Asegura que los campos virtuales (como 'id') se incluyan.
+        transform: (doc, ret) => { // Permite transformar el objeto retornado.
+            delete ret._id; // Elimina el campo _id del objeto JSON. El virtual 'id' ya está presente.
+            delete ret.__v; // Elimina el campo de versión __v.
+        }
+    },
+    toObject: { // Opciones para cuando el documento se convierte a un objeto plano (ej. usando .toObject())
+        virtuals: true, // Asegura que los campos virtuales (como 'id') se incluyan.
+        transform: (doc, ret) => { // Permite transformar el objeto retornado.
+            delete ret._id; // Elimina el campo _id del objeto plano. El virtual 'id' ya está presente.
+            delete ret.__v; // Elimina el campo de versión __v.
         }
     }
 });

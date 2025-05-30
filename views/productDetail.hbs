@@ -1,0 +1,107 @@
+{{!-- productDetail.hbs --}}
+{{!-- Vista para mostrar los detalles de un producto específico. --}}
+
+{{#if error}}
+    {{!-- Si hay un mensaje de error (ej. producto no encontrado o error del servidor), mostrarlo --}}
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">{{title}}</h4>
+        <p>{{error}}</p>
+        <hr>
+        <p class="mb-0">Por favor, intenta <a href="/" class="alert-link">volver al inicio</a> o verifica la URL.</p>
+        {{#if productId}}
+            <p class="mt-2"><small>ID Buscado: {{productId}}</small></p>
+        {{/if}}
+    </div>
+{{else}}
+    {{!-- Si el producto se encontró y no hay errores, mostrar sus detalles --}}
+    {{#with product}}
+        {{!-- Usamos #with para establecer el contexto al objeto 'product' --}}
+        {{!-- Esto nos permite acceder a sus propiedades directamente (ej. 'name' en lugar de 'product.name') --}}
+        
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="card">
+                        {{#if image}}
+                            {{!-- Si el producto tiene una imagen, mostrarla --}}
+                            {{!-- Nota: La propiedad 'image' no está actualmente en el modelo de datos, 
+                                 esto es un ejemplo si se quisiera agregar en el futuro. 
+                                 Si no existe, esta sección no se renderizará. --}}
+                            <img src="{{image}}" class="card-img-top" alt="Imagen de {{name}}">
+                        {{else}}
+                            {{!-- Placeholder visual si no hay imagen definida para el producto --}}
+                            <div class="text-center p-5 bg-light">
+                                <p class="text-muted">(Imagen no disponible)</p>
+                            </div>
+                        {{/if}}
+
+                        <div class="card-body">
+                            <h1 class="card-title">{{name}}</h1>
+                            {{#if brand}}
+                                <h4 class="card-subtitle mb-2 text-muted">Marca: {{brand}}</h4>
+                            {{/if}}
+                            
+                            <p class="card-text" style="font-size: 1.5rem; color: #007bff;">
+                                <strong>Precio: ${{price}}</strong>
+                            </p>
+
+                            {{#if shortDescription}}
+                                <p class="card-text"><em>{{shortDescription}}</em></p>
+                            {{/if}}
+
+                            {{#if description}}
+                                <h5 class="mt-4">Descripción Detallada:</h5>
+                                <p class="card-text">{{description}}</p>
+                            {{else if longDescription}}
+                                {{!-- Fallback a longDescription si description no existe pero longDescription sí --}}
+                                <h5 class="mt-4">Descripción Detallada:</h5>
+                                <p class="card-text">{{longDescription}}</p>
+                            {{/if}}
+                            
+                            <hr>
+
+                            <ul class="list-group list-group-flush">
+                                {{#if category}}
+                                <li class="list-group-item"><strong>Categoría:</strong> {{category}}</li>
+                                {{/if}}
+                                {{#if code}}
+                                <li class="list-group-item"><strong>Código:</strong> {{code}}</li>
+                                {{/if}}
+                                <li class="list-group-item">
+                                    <strong>Stock:</strong> 
+                                    {{#if stock}}
+                                        {{stock}} unidades disponibles
+                                    {{else}}
+                                        <span class="text-danger">Agotado</span>
+                                    {{/if}}
+                                </li>
+                                {{#if freeShipping}}
+                                <li class="list-group-item text-success">
+                                    {{!-- Asumiendo Font Awesome o similar para íconos --}}
+                                    <i class="fas fa-shipping-fast"></i> Envío Gratis
+                                </li>
+                                {{/if}}
+                                {{!-- El ID del producto se muestra para referencia, es el mismo que en la URL --}}
+                                <li class="list-group-item"><strong>ID del Producto:</strong> {{id}}</li>
+                            </ul>
+                        </div>
+
+                        <div class="card-footer text-center">
+                            <a href="/" class="btn btn-primary">Volver al listado</a>
+                            {{!-- Espacio para futuros botones como "Agregar al carrito", "Comprar ahora", etc. --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{else}}
+        {{!-- Este bloque se renderizaría si 'product' es null o undefined y no hay 'error' --}}
+        {{!-- Es una salvaguarda, aunque el controlador debería manejar el caso de producto no encontrado y pasar 'error'. --}}
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Producto no disponible</h4>
+            <p>Los detalles del producto no están disponibles en este momento.</p>
+            <hr>
+            <p class="mb-0">Por favor, intenta <a href="/" class="alert-link">volver al inicio</a>.</p>
+        </div>
+    {{/with}}
+{{/if}}
