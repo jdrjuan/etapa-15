@@ -7,13 +7,6 @@ import { create } from 'express-handlebars';
 
 const app = express();
 
-// Configuración de Handlebars.
-// Por defecto, Handlebars (a partir de la v4.6.0+) deshabilita el acceso a propiedades y métodos del prototipo
-// por razones de seguridad. Esta es una buena práctica de seguridad para prevenir el acceso no intencionado
-// a datos o métodos potencialmente sensibles en los prototipos de los objetos.
-// Si necesitas mostrar datos de objetos con prototipos (por ejemplo, objetos de Mongoose),
-// deberías convertirlos a objetos JavaScript planos (POJOs) antes de pasarlos a la plantilla.
-// Por ejemplo, usando `.lean()` con consultas de Mongoose, o `JSON.parse(JSON.stringify(obj))`.
 const hbs = create({
     extname: '.hbs',
     defaultLayout: 'main',

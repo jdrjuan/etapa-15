@@ -8,6 +8,13 @@ const renderHome = async (req, res) => {
     // Convertir los productos obtenidos a objetos JavaScript planos (POJOs) antes de pasarlos a la plantilla.
     // Esta conversión es esencial para la seguridad y compatibilidad con Handlebars.
     //
+    // Por defecto, Handlebars (a partir de la v4.6.0+) deshabilita el acceso a propiedades y métodos del prototipo
+    // por razones de seguridad. Esta es una buena práctica de seguridad para prevenir el acceso no intencionado
+    // a datos o métodos potencialmente sensibles en los prototipos de los objetos.
+    // Si necesitamos mostrar datos de objetos con prototipos (por ejemplo, objetos de Mongoose),
+    // deberíamos convertirlos a objetos JavaScript planos (POJOs) antes de pasarlos a la plantilla.
+    // Por ejemplo, usando `.lean()` con consultas de Mongoose, o `JSON.parse(JSON.stringify(obj))`.
+    
     // Para productos de Mongoose:
     //   - Se invoca el método `toObject()` en cada producto de Mongoose.
     //   - La configuración del esquema de Mongoose (`models/productsMongoDB.js`) para `toObject` incluye:

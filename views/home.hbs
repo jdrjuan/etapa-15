@@ -1,11 +1,5 @@
 <h1>Productos</h1>
 
-{{!--
-  El helper de Handlebars {{#each products}} itera sobre el array 'products'
-  que fue pasado a esta plantilla desde el controlador (controllers/frontend.js).
-  Por cada producto en el array, se renderiza el código dentro del bloque {{#each}}.
-  Dentro del bloque, `this` se refiere al objeto producto actual que se está iterando.
---}}
 {{#each products}}
     <div class="product">
         {{!--
