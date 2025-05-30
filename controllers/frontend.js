@@ -31,15 +31,15 @@ const renderHome = async (req, res) => {
         // `virtuals: true` y una transformación para eliminar `_id` y `__v`.
         // Para otros tipos de objetos (ej. de FS o Memoria, que ya deberían ser planos),
         // se crea una copia superficial para asegurar que no se modifiquen los objetos originales de la caché del modelo.
-        let productObject = (typeof p.toObject === 'function') 
-            ? p.toObject({ virtuals: true, getters: true }) 
+        let productObject = (typeof p.toObject === 'function')
+            ? p.toObject({ virtuals: true, getters: true })
             : { ...p };
-        
+
         // Doble verificación y normalización del ID como string.
         // Aunque `p.toObject({ virtuals: true })` debería haber creado 'id' a partir de '_id' para Mongoose,
         // esta sección actúa como un refuerzo y asegura la consistencia.
         if (productObject._id) { // Si _id todavía existe (inesperado para Mongoose con la configuración de esquema correcta)
-            if (!productObject.id || typeof productObject.id !== 'string') { 
+            if (!productObject.id || typeof productObject.id !== 'string') {
                 productObject.id = productObject._id.toString();
             }
             delete productObject._id; // Eliminar _id definitivamente.
@@ -47,7 +47,7 @@ const renderHome = async (req, res) => {
             // Si 'id' existe pero no es un string (ej. un ObjectId si la virtual no funcionó como se esperaba).
             productObject.id = productObject.id.toString();
         }
-        
+
         // Eliminar el campo de versión de Mongoose si aún existe.
         delete productObject.__v;
 
@@ -85,8 +85,8 @@ const renderProductDetail = async (req, res) => {
         if (product) {
             // Asegurar que el producto individual sea un objeto JavaScript plano (POJO)
             // antes de pasarlo a la plantilla, aplicando la misma lógica que para la lista de productos.
-            let plainProduct = (typeof product.toObject === 'function') 
-                ? product.toObject({ virtuals: true, getters: true }) 
+            let plainProduct = (typeof product.toObject === 'function')
+                ? product.toObject({ virtuals: true, getters: true })
                 : { ...product };
 
             // Doble verificación y normalización del ID como string para el producto individual.
@@ -98,12 +98,12 @@ const renderProductDetail = async (req, res) => {
             } else if (plainProduct.id && typeof plainProduct.id !== 'string') {
                 plainProduct.id = plainProduct.id.toString();
             }
-            
+
             // Eliminar el campo de versión de Mongoose si aún existe.
             delete plainProduct.__v;
 
             // Si el producto se encuentra y se ha procesado a POJO, renderizar la vista de detalle.
-            res.render('productDetail', { 
+            res.render('productDetail', {
                 title: plainProduct.name || 'Detalle del Producto', // Título de la página
                 product: plainProduct // Objeto producto plano para usar en la plantilla
             });
@@ -125,7 +125,7 @@ const renderProductDetail = async (req, res) => {
         // Responder con un estado 500 y renderizar la vista de detalle
         // indicando un error genérico.
         // Opcionalmente, usar una plantilla de error global.
-        res.status(500).render('productDetail', { 
+        res.status(500).render('productDetail', {
             title: 'Error del servidor',
             error: 'Ocurrió un error al intentar obtener los detalles del producto. Por favor, intenta más tarde.'
         });

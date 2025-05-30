@@ -17,7 +17,7 @@
     {{#with product}}
         {{!-- Usamos #with para establecer el contexto al objeto 'product' --}}
         {{!-- Esto nos permite acceder a sus propiedades directamente (ej. 'name' en lugar de 'product.name') --}}
-        
+
         <div class="container mt-4">
             <div class="row">
                 <div class="col-md-8 offset-md-2">
@@ -37,7 +37,7 @@
                             {{#if brand}}
                                 <h4 class="card-subtitle mb-2 text-muted">Marca: {{brand}}</h4>
                             {{/if}}
-                            
+
                             <p class="card-text" style="font-size: 1.5rem; color: #007bff;">
                                 <strong>Precio: ${{price}}</strong>
                             </p>
@@ -51,7 +51,7 @@
                                 <h5 class="mt-4">Descripción Detallada:</h5>
                                 <p class="card-text">{{longDescription}}</p>
                             {{/if}}
-                            
+
                             <hr>
 
                             <ul class="list-group list-group-flush">
@@ -62,7 +62,7 @@
                                 <li class="list-group-item"><strong>Código:</strong> {{code}}</li>
                                 {{/if}}
                                 <li class="list-group-item">
-                                    <strong>Stock:</strong> 
+                                    <strong>Stock:</strong>
                                     {{#if stock}}
                                         {{stock}} unidades disponibles
                                     {{else}}

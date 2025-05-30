@@ -12,7 +12,7 @@ const productsSchema = new mongoose.Schema({
     "mainPhoto": String
 }, {
     versionKey: false,
-    toJSON: { 
+    toJSON: {
         // Opciones para cuando el documento se convierte a JSON (ej. al enviar en respuestas res.json()).
         // Estas opciones ayudan a preparar el documento para que la conversión final a POJO en el controlador sea más sencilla.
         virtuals: true, // Incluye los campos virtuales definidos en el esquema (ej. 'id' por defecto de Mongoose).
@@ -25,7 +25,7 @@ const productsSchema = new mongoose.Schema({
             return ret;         // Es crucial devolver el objeto 'ret' modificado.
         }
     },
-    toObject: { 
+    toObject: {
         // Opciones para cuando el documento se convierte a un objeto plano (ej. usando el método .toObject()).
         // Similar a toJSON, estas opciones preparan el documento. El controlador realizará la conversión final.
         virtuals: true, // Incluye los campos virtuales.
