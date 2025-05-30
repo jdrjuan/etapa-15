@@ -1,0 +1,18 @@
+<h1>Productos</h1>
+
+{{#each products}}
+    <div class="product">
+        <h2>{{this.name}} - {{this.brand}}</h2>
+        <p>Precio: ${{this.price}}</p>
+        <p>Descripción: {{this.shortDescription}}</p>
+        {{#if this.stock}}
+            <p>Stock: {{this.stock}}</p>
+        {{else}}
+            <p style="color: #777;">(Agotado)</p>
+        {{/if}}
+        {{#if this.freeShipping}}
+            <p><strong>Envío gratis</strong></p>
+        {{/if}}
+        <p><a href="/productos/{{this.id}}">Más información</a></p>
+    </div>
+{{/each}}
